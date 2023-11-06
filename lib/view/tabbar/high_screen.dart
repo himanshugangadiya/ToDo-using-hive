@@ -19,51 +19,121 @@ class _HighScreenState extends State<HighScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: ValueListenableBuilder(
-          valueListenable: widget.box.listenable(),
-          builder: (context, value, child) {
-            if (value.isEmpty) {
-              return const Center(
-                child: Text("No data found"),
-              );
-            } else if (value.isNotEmpty) {
-              return ListView.builder(
-                itemCount: value.length,
-                itemBuilder: (context, index) {
-                  ToDo toDo = value.getAt(index);
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
 
-                  return toDo.category == "High"
-                      ? ListTileWidget(
-                          toDo: toDo,
-                          onTapDelete: () {
-                            widget.box.deleteAt(index);
-                          },
-                          onChangeComplete: (value) {
-                            setState(() {
-                              toDo.isCompleted = value!;
-                            });
-                            widget.box.putAt(index, toDo);
-                          },
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    DetailedScreen(toDo: toDo),
-                              ),
-                            );
-                          },
-                          onTapEdit: () {},
-                        )
-                      : Container();
+              /// completed
+              ValueListenableBuilder(
+                valueListenable: widget.box.listenable(),
+                builder: (context, value, child) {
+                  if (value.isEmpty) {
+                    return SizedBox(
+                      height: MediaQuery.sizeOf(context).height / 1.5,
+                      child: const Center(
+                        child: Text("No data found"),
+                      ),
+                    );
+                  } else if (value.isNotEmpty) {
+                    return ListView.builder(
+                      itemCount: value.values.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      primary: false,
+                      itemBuilder: (context, index) {
+                        ToDo toDo = value.getAt(index);
+
+                        return toDo.category == "High" &&
+                                toDo.isCompleted == false
+                            ? ListTileWidget(
+                                index: index,
+                                toDo: toDo,
+                                onTapDelete: () {
+                                  widget.box.deleteAt(index);
+                                },
+                                onChangeComplete: (value) {
+                                  setState(() {
+                                    toDo.isCompleted = value!;
+                                  });
+                                  widget.box.putAt(index, toDo);
+                                },
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailedScreen(toDo: toDo),
+                                    ),
+                                  );
+                                },
+                                onTapEdit: () {},
+                              )
+                            : Container();
+                      },
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
                 },
-              );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
+              ),
+
+              /// uncompleted
+              ValueListenableBuilder(
+                valueListenable: widget.box.listenable(),
+                builder: (context, value, child) {
+                  if (value.isEmpty) {
+                    return Container();
+                  } else if (value.isNotEmpty) {
+                    return ListView.builder(
+                      itemCount: value.values.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        ToDo toDo = value.getAt(index);
+
+                        return toDo.category == "High" &&
+                                toDo.isCompleted == true
+                            ? ListTileWidget(
+                                toDo: toDo,
+                                index: index,
+                                onTapDelete: () {
+                                  widget.box.deleteAt(index);
+                                },
+                                onChangeComplete: (value) {
+                                  setState(() {
+                                    toDo.isCompleted = value!;
+                                  });
+                                  widget.box.putAt(index, toDo);
+                                },
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailedScreen(toDo: toDo),
+                                    ),
+                                  );
+                                },
+                                onTapEdit: () {},
+                              )
+                            : Container();
+                      },
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

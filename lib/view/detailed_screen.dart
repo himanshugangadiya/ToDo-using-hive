@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_database/model/toDo.dart';
+import 'package:intl/intl.dart';
 
 class DetailedScreen extends StatefulWidget {
   final ToDo toDo;
@@ -70,7 +71,8 @@ class _DetailedScreenState extends State<DetailedScreen> {
               const SizedBox(
                 height: 5,
               ),
-              Text(widget.toDo.dateTime.toString()),
+              Text(DateFormat("dd/MM/yyyy  hh:mm a")
+                  .format(widget.toDo.dateTime)),
             ],
           ),
         ),

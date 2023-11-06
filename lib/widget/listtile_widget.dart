@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_database/view/edit_screen.dart';
 
 import '../model/toDo.dart';
 
 class ListTileWidget extends StatefulWidget {
-  ToDo toDo;
+  final ToDo toDo;
 
   final VoidCallback onTapDelete;
   final VoidCallback onTap;
   final VoidCallback onTapEdit;
   final void Function(bool?) onChangeComplete;
+  final int index;
 
   ListTileWidget({
     Key? key,
@@ -18,6 +19,7 @@ class ListTileWidget extends StatefulWidget {
     required this.onChangeComplete,
     required this.onTap,
     required this.onTapEdit,
+    required this.index,
   }) : super(key: key);
 
   @override
@@ -26,12 +28,28 @@ class ListTileWidget extends StatefulWidget {
 
 class _ListTileWidgetState extends State<ListTileWidget> {
   String value = "Edit";
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
       onTap: widget.onTap,
-      title: Text(widget.toDo.title),
-      subtitle: Text(widget.toDo.subTitle),
+      title: Text(
+        widget.toDo.title,
+        maxLines: 1,
+        style: TextStyle(
+          overflow: TextOverflow.ellipsis,
+          decoration: widget.toDo.isCompleted
+              ? TextDecoration.lineThrough
+              : TextDecoration.none,
+        ),
+      ),
+      subtitle: Text(
+        widget.toDo.subTitle,
+        maxLines: 1,
+        style: const TextStyle(
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
       leading: Checkbox(
         value: widget.toDo.isCompleted,
         onChanged: widget.onChangeComplete,
@@ -60,9 +78,18 @@ class _ListTileWidgetState extends State<ListTileWidget> {
         onSelected: (String newValue) {
           setState(() {
             value = newValue;
-            debugPrint("debugPrint=============$value");
-            print("print=============$value");
           });
+          if (value == "Edit") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditScreen(
+                  toDo: widget.toDo,
+                  index: widget.index,
+                ),
+              ),
+            );
+          }
         },
       ),
     );
